@@ -18,9 +18,11 @@
   --radius-md: 14px;
   --radius-sm: 10px;
   --max-width: 920px;
-  --font-sans: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
-  --font-display: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  --font-display: 'Orbitron', sans-serif;
   --transition: 0.25s ease;
+  --transition-slow: 0.6s ease;
+  --nebula-soft: rgba(139, 92, 246, 0.08);
 
   font-family: var(--font-sans);
   font-size: 17px;
@@ -43,7 +45,62 @@
 body {
   margin: 0;
   min-height: 100svh;
-  background: radial-gradient(ellipse 120% 80% at 50% -20%, #1e293b 0%, var(--space-void) 55%);
+  background:
+    radial-gradient(ellipse 120% 80% at 50% -20%, #1e293b 0%, var(--space-void) 55%),
+    radial-gradient(ellipse 80% 60% at 80% 110%, rgba(88, 28, 135, 0.15) 0%, transparent 60%),
+    var(--space-void);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 90px;
+  height: 100vh;
+  background: linear-gradient(180deg, transparent 0%, rgba(125, 211, 252, 0.06) 20%, rgba(125, 211, 252, 0.06) 80%, transparent 100%);
+  z-index: 0;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    80% 10%,
+    100% 20%,
+    80% 30%,
+    100% 40%,
+    80% 50%,
+    100% 60%,
+    80% 70%,
+    100% 80%,
+    80% 90%,
+    100% 100%,
+    0 100%
+  );
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 90px;
+  height: 100vh;
+  background: linear-gradient(180deg, transparent 0%, rgba(125, 211, 252, 0.06) 20%, rgba(125, 211, 252, 0.06) 80%, transparent 100%);
+  z-index: 0;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    20% 90%,
+    0 80%,
+    20% 70%,
+    0 60%,
+    20% 50%,
+    0 40%,
+    20% 30%,
+    0 20%,
+    20% 10%
+  );
 }
 
 #app {
@@ -85,6 +142,18 @@ body {
   }
 }
 
+.space-scene::after {
+  content: '';
+  position: absolute;
+  width: 50vmin;
+  height: 50vmin;
+  bottom: -10%;
+  right: -5%;
+  background: radial-gradient(circle, var(--nebula-soft) 0%, transparent 70%);
+  filter: blur(50px);
+  animation: pulse-glow 10s ease-in-out infinite alternate-reverse;
+}
+
 .space-stars {
   position: absolute;
   inset: 0;
@@ -110,7 +179,7 @@ body {
     radial-gradient(1px 1px at 290px 70px, rgba(255, 255, 255, 0.5), transparent);
   background-size: 320px 180px;
   opacity: 0.85;
-  animation: drift-stars 120s linear infinite;
+  animation: drift-stars 180s linear infinite;
 }
 
 @keyframes drift-stars {
@@ -124,7 +193,8 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .space-stars--near,
-  .space-glow {
+  .space-glow,
+  .space-scene::after {
     animation: none;
   }
 }
@@ -153,6 +223,16 @@ body {
   color: var(--accent);
 }
 
+.apod-eyebrow::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 1px;
+  margin: 0.75rem auto 0;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.4;
+}
+
 .apod-title {
   margin: 0;
   font-family: var(--font-display);
@@ -161,6 +241,7 @@ body {
   line-height: 1.15;
   letter-spacing: -0.02em;
   color: var(--text-primary);
+  text-shadow: 0 0 40px rgba(125, 211, 252, 0.15);
   text-wrap: balance;
 }
 
@@ -173,7 +254,8 @@ body {
 }
 
 .apod-panel {
-  background: var(--glass-bg);
+  position: relative;
+  background: rgba(15, 23, 42, 0.45);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   box-shadow:
@@ -183,9 +265,32 @@ body {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   padding: clamp(1.25rem, 3vw, 2rem);
+  animation: panel-enter var(--transition-slow) both;
   transition:
     border-color var(--transition),
     box-shadow var(--transition);
+}
+
+.apod-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(125, 211, 252, 0.3), transparent);
+  pointer-events: none;
+}
+
+@keyframes panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .apod-panel:focus-within {
@@ -209,12 +314,31 @@ body {
 }
 
 .apod-spinner {
-  width: 48px;
-  height: 48px;
+  position: relative;
+  width: 56px;
+  height: 56px;
+}
+
+.apod-spinner::before,
+.apod-spinner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
   border-radius: 50%;
-  border: 3px solid rgba(148, 163, 184, 0.2);
+  border: 2px solid transparent;
+}
+
+.apod-spinner::before {
   border-top-color: var(--accent);
-  animation: spin 0.9s linear infinite;
+  border-right-color: var(--accent);
+  animation: spin 1.2s linear infinite;
+}
+
+.apod-spinner::after {
+  inset: 8px;
+  border-bottom-color: rgba(139, 92, 246, 0.6);
+  border-left-color: rgba(139, 92, 246, 0.6);
+  animation: spin 1.8s linear infinite reverse;
 }
 
 @keyframes spin {
@@ -230,9 +354,18 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .apod-spinner {
+  .apod-spinner::before,
+  .apod-spinner::after {
     animation: none;
-    border-top-color: var(--accent);
+  }
+
+  .apod-spinner::before {
+    border-color: var(--accent);
+    opacity: 0.85;
+  }
+
+  .apod-spinner::after {
+    border-color: rgba(139, 92, 246, 0.6);
     opacity: 0.85;
   }
 }
@@ -252,6 +385,14 @@ body {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--error-text);
+}
+
+.apod-error-title::before {
+  content: '⚠';
+  display: block;
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
 }
 
 .apod-error-message {
@@ -276,14 +417,16 @@ body {
   display: inline-block;
   margin: 0 0 0.65rem;
   padding: 0.35rem 0.85rem;
-  font-size: 0.8rem;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--accent);
   background: var(--accent-soft);
   border: 1px solid rgba(125, 211, 252, 0.25);
   border-radius: 999px;
+  animation: fade-in-up var(--transition-slow) 0.1s both;
 }
 
 .apod-heading {
@@ -294,7 +437,9 @@ body {
   line-height: 1.25;
   letter-spacing: -0.02em;
   color: var(--text-primary);
+  text-shadow: 0 0 30px rgba(125, 211, 252, 0.1);
   text-wrap: balance;
+  animation: fade-in-up var(--transition-slow) 0.2s both;
 }
 
 .apod-media {
@@ -305,6 +450,7 @@ body {
   box-shadow:
     0 16px 40px rgba(0, 0, 0, 0.5),
     0 0 0 1px rgba(255, 255, 255, 0.06);
+  animation: fade-in-up var(--transition-slow) 0.3s both;
   transition:
     transform var(--transition),
     box-shadow var(--transition);
@@ -324,6 +470,22 @@ body {
   background: var(--space-mid);
   border-radius: var(--radius-md);
   overflow: hidden;
+}
+
+.apod-media-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.apod-media-frame.is-loaded::after {
+  opacity: 1;
 }
 
 .apod-media-skeleton {
@@ -365,7 +527,7 @@ body {
   object-fit: cover;
   opacity: 0;
   transition:
-    opacity 0.5s ease,
+    opacity 0.7s ease,
     transform 0.4s ease;
 }
 
@@ -426,20 +588,24 @@ body {
 .apod-body {
   max-width: 68ch;
   margin: 0 auto;
+  animation: fade-in-up var(--transition-slow) 0.4s both;
 }
 
 .apod-explanation {
   margin: 0;
+  padding-left: 1.25rem;
   font-size: 1.05rem;
-  line-height: 1.75;
+  line-height: 1.8;
   color: var(--text-primary);
   text-wrap: pretty;
+  border-left: 2px solid rgba(125, 211, 252, 0.15);
 }
 
 .apod-footer {
   margin-top: 1.5rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.2), transparent) 1;
 }
 
 .apod-copyright {
@@ -447,6 +613,27 @@ body {
   font-size: 0.8rem;
   color: var(--text-faint);
   text-align: center;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .apod-panel {
+    padding: clamp(1rem, 2.5vw, 1.5rem);
+  }
+
+  .apod-title {
+    font-size: clamp(1.5rem, 4.5vw, 2.25rem);
+  }
 }
 
 @media (max-width: 480px) {
@@ -475,9 +662,23 @@ body {
     transition: none;
   }
 
+  .apod-panel,
+  .apod-date,
+  .apod-heading,
+  .apod-media,
+  .apod-body {
+    animation: none;
+  }
+
   .apod-media:hover,
   .apod-media:hover .apod-image,
   .apod-button:hover {
     transform: none;
+  }
+}
+@media (max-width: 600px) {
+  body::before,
+  body::after {
+    display: none;
   }
 }
