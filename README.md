@@ -216,14 +216,6 @@ Cinematic
 
 The loading state uses a custom CSS orbital system.
 
-```text
-             ◯
-          ╱     ╲
-        ◯    •    ◯
-          ╲     ╱
-             ◯
-```
-
 Instead of a generic spinner, the interface uses:
 
 - Concentric orbital rings
@@ -399,15 +391,9 @@ AI was used throughout development as a **development assistant**.
 It helped with:
 
 - Architecture planning
-- Feature design
-- Implementation guidance
 - Debugging
 - CSS refinement
-- UX improvements
 - Documentation
-- Development workflow
-
-The project was manually reviewed, tested, built, committed, and deployed during development.
 
 ---
 
